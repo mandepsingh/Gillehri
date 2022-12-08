@@ -1,49 +1,36 @@
-import React, {useEffect} from 'react';
+import React from 'react';
+import { Container } from '@material-ui/core';
+import { BrowserRouter, Routes, Route, Navigate} from 'react-router-dom';
 
-import {Container ,AppBar , Typography , Grid , Grow} from '@material-ui/core';
+import PostDetails from './components/PostDetails/PostDetails';
+import Navbar from './components/Navbar/Navbar';
+import Home from './components/Home/Home';
+import Form from './components/Form/Form'
+import Auth from './components/Auth/Auth';
 
-import { getPosts } from './actions/posts.js'
-import Posts from './components/Posts/Posts.js'
-import Form from './components/Form/Form.js'
-import { useDispatch } from 'react-redux';
+import { useState } from 'react';
 
-import memories from './images/memories.png';
+const App = () => {
+  const user = JSON.parse(localStorage.getItem('profile'));
 
-import useStyles from './styles.js'
+  const [currentId, setCurrentId] = useState(0);
+  
 
-const App= () =>{
-    const classes= useStyles();
-    const dispatch = useDispatch();
-
-    useEffect(() => {
-       dispatch(getPosts);
-    }, [dispatch]);
-    
-    return (
-       <Container maxwidth="lg" >
-         <AppBar className={classes.appBar} position="static" color="inherit">
-           <Typography className={classes.heading} class="ProjectTitle" variant="h3" align="center">GILLEHRi</Typography>
-        
-           <img className ={classes.image} src={memories} alt="memories" height="60" />
-       
-         </AppBar>
-         <Grow in>
-           <Container>
-             <Grid container justify="space-between" alignItems="stretch" spacing ={3}>
-               <Grid item xs={12} sm={7}>
-                 <Posts/>
-
-               </Grid>
-               <Grid item xs={12} sm={4}>
-                 <Form/>
-                 
-               </Grid>
-
-             </Grid>
-           </Container>
-         </Grow>
-       </Container> 
-    );
-}
+  return (
+    <BrowserRouter>
+      <Container maxWidth="xl">
+        <Navbar setCurrentId= {setCurrentId}/>
+        <Routes>
+          <Route path="/" exact element={<Navigate replace to="/posts" />} />
+          <Route path="/upload" exact element={<Form currentId={currentId} setCurrentId={setCurrentId}/>} />
+          <Route path="/posts" exact element={<Home setCurrentId={setCurrentId}/>} />
+          <Route path="/posts/search" exact element={<Home/>} />
+          <Route path="/posts/:id" exact element={<PostDetails/>} />
+          <Route path="/auth" exact element={(!user ? <Auth /> : <Navigate to="/posts" />)} />
+        </Routes>
+      </Container>
+    </BrowserRouter>
+  );
+};
 
 export default App;

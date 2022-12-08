@@ -1,6 +1,6 @@
 import React ,{ useState,useEffect } from 'react';
 import { Grid, CircularProgress } from '@material-ui/core';
-// import { useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 // import post from '../../../reducers/posts.js';
 import useStyles from './styles.js'
 import Post from "./Post/Post"
@@ -8,11 +8,13 @@ const axios = require('axios');
 
 
 
-const Posts = () => {
+const Posts = ({setCurrentId}) => {
     const [items, setItems] = useState([""]);
-    // const [isBusy, setBusy] = useState(true);
-    // const posts = useSelector( ( state )=> state.posts );
+    const { posts, isLoading } = useSelector((state) => state.posts);
+    console.log(posts);
     const classes= useStyles();
+    if (!posts.length && !isLoading) return 'No posts';
+    // const [isBusy, setBusy] = useState(true);
     // var data = await axios.get('http://localhost:5000/posts');
     // useEffect( async () => {
     //       await fetch().then(res => {
@@ -26,19 +28,19 @@ const Posts = () => {
         
     // }
     
-    useEffect(() => {
-    axios.get('http://localhost:5000/posts')
-        .then((res) => {
-            setItems(res.data);
-            console.log(res.data);   
-        })
+    // useEffect(() => {
+    // axios.get('https://gillehri-project.herokuapp.com/posts')
+    //     .then((res) => {
+    //         setItems(res.data);
+    //         // console.log(res.data);   
+    //     })
         
-        // setBusy(false);
+    //     // setBusy(false);
         
        
-        // console.log(res.data))
-        // console.log(items.length)
-    },[]);
+    //     // console.log(res.data))
+    //     // console.log(items.length)
+    // },[]);
 
     // const fetchMyAPI = useCallback(async () => {
     //     let response = await fetch('http://localhost:5000/posts')
@@ -53,21 +55,17 @@ const Posts = () => {
 
     // console.log(items);
     // console.log(items.data);
-    return(
-        // (!{items}.length) ? <CircularProgress/> : (
-           <Grid className={classes.container} container alignItems="stretch" spacing={3}>
-              {items.map((item) => (
-                  <Grid key={item._id} item xs={12} sm={6}>
-                       <Post post={item} />
-                       {/* <h5>{item.creator}</h5> */}
-  
-                   </Grid>
-                  ))}
-           </Grid> 
-        //    <h5>happy to be here{items[0].likeCount}</h5>
-    //    )
-    )
+    return (
+        isLoading ? <CircularProgress /> : (
+          <Grid className={classes.container} container alignItems="stretch" spacing={3}>
+            {posts?.map((post) => (
+              <Grid key={post._id} item xs={12} sm={12} md={6} lg={3}>
+                <Post post={post} setCurrentId={setCurrentId} />
+              </Grid>
+            ))}
+          </Grid>
+        )
+      );
+    };
     
-}
-
-export default Posts;
+    export default Posts;
